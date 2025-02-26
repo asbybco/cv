@@ -42,29 +42,53 @@
         .action-button:hover { background-color: #2563eb; }
         .header-section h1 { font-size: 3rem; }
         .header-section p { font-size: 1.25rem; line-height: 1.75rem; }
-        @media print { .buttons-container, .action-buttons, .btn { display: none !important; } }
+        /* Estilo del botón de idioma */
+        .language-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: linear-gradient(135deg, #6b7280, #4b5563); 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-weight: 500; 
+            transition: transform 0.2s ease, background 0.3s ease; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+        }
+        .language-btn:hover { 
+            transform: scale(1.05); 
+            background: linear-gradient(135deg, #4b5563, #374151); 
+        }
+        @media print { .buttons-container, .action-buttons, .btn, .language-btn { display: none !important; } }
     </style>
 </head>
 <body class="bg-white p-4 md:p-8">
-    <div class="max-w-4xl mx-auto p-8" id="cv-container">
+    <div class="max-w-4xl mx-auto p-8 relative" id="cv-container">
+        <button class="language-btn" id="toggle-language">EN/ES</button>
         <div class="header-section mb-8">
             <div class="profile-circle mb-4" id="profile-circle">
                 <img id="profile-image" src="/images/default-profile.jpg" alt="Profile Photo" />
             </div>
             <input type="file" id="profile-input" accept="image/*" style="display: none;" />
-            <h1 contenteditable="true" class="font-bold mb-4">Margarita Salazar Bastidas</h1>
-            <p class="mb-1"><strong>Tel:</strong> <span contenteditable="true">789 000 0000</span> | <strong>Email:</strong> <span contenteditable="true">example@gmail.com</span></p>
-            <p class="mb-1"><strong>City:</strong> <span contenteditable="true">Miami Florida</span></p>
-            <p><strong>Marital Status:</strong> <span contenteditable="true">free Union</span> | <strong>Religion:</strong> <span contenteditable="true">I believe in God</span></p>
+            <h1 contenteditable="true" class="font-bold mb-4" data-translate="full-name">Margarita Salazar Bastidas</h1>
+            <p class="mb-1">
+                <strong data-translate="tel-label">Tel:</strong> <span contenteditable="true">789 000 0000</span> | 
+                <strong data-translate="email-label">Email:</strong> <span contenteditable="true">example@gmail.com</span>
+            </p>
+            <p class="mb-1"><strong data-translate="city-label">City:</strong> <span contenteditable="true">Miami Florida</span></p>
+            <p>
+                <strong data-translate="marital-status-label">Marital Status:</strong> <span contenteditable="true" data-translate="marital-status">free Union</span> | 
+                <strong data-translate="religion-label">Religion:</strong> <span contenteditable="true" data-translate="religion">I believe in God</span>
+            </p>
         </div>
         <hr class="my-6 border-black">
         <div class="mb-12">
-            <h2 class="section-title">Objective</h2>
-            <p contenteditable="true" class="mt-6 text-left">To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.</p>
+            <h2 class="section-title" data-translate="objective-title">Objective</h2>
+            <p contenteditable="true" class="mt-6 text-left" data-translate="objective-text">To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.</p>
         </div>
         <div class="mb-12">
             <div class="section-header">
-                <h2 class="section-title">Work Experience</h2>
+                <h2 class="section-title" data-translate="experience-title">Work Experience</h2>
                 <div class="buttons-container">
                     <button class="btn btn-add" data-section="experience">+</button>
                     <button class="btn btn-remove" data-section="experience">-</button>
@@ -74,7 +98,7 @@
         </div>
         <div class="mb-12">
             <div class="section-header">
-                <h2 class="section-title">Education</h2>
+                <h2 class="section-title" data-translate="education-title">Education</h2>
                 <div class="buttons-container">
                     <button class="btn btn-add" data-section="education">+</button>
                     <button class="btn btn-remove" data-section="education">-</button>
@@ -84,7 +108,7 @@
         </div>
         <div class="mb-12">
             <div class="section-header">
-                <h2 class="section-title">References</h2>
+                <h2 class="section-title" data-translate="references-title">References</h2>
                 <div class="buttons-container">
                     <button class="btn btn-add" data-section="reference">+</button>
                     <button class="btn btn-remove" data-section="reference">-</button>
@@ -94,7 +118,7 @@
         </div>
         <div class="mb-12">
             <div class="section-header">
-                <h2 class="section-title">Abilities</h2>
+                <h2 class="section-title" data-translate="abilities-title">Abilities</h2>
                 <div class="buttons-container">
                     <button class="btn btn-add" data-section="ability">+</button>
                     <button class="btn btn-remove" data-section="ability">-</button>
@@ -103,8 +127,8 @@
             <div id="ability-container" class="mt-6"></div>
         </div>
         <div class="mb-12" id="interest-section">
-            <h2 class="section-title">Interest</h2>
-            <div contenteditable="true" class="mt-6 text-left">Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.</div>
+            <h2 class="section-title" data-translate="interest-title">Interest</h2>
+            <div contenteditable="true" class="mt-6 text-left" data-translate="interest-text">Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.</div>
         </div>
         <div class="action-buttons">
             <button class="action-button" id="add-section">Add Section</button>
@@ -112,11 +136,57 @@
         </div>
     </div>
     <script>
+        const TRANSLATIONS = {
+            en: {
+                "full-name": "Margarita Salazar Bastidas",
+                "tel-label": "Tel:",
+                "email-label": "Email:",
+                "city-label": "City:",
+                "marital-status-label": "Marital Status:",
+                "marital-status": "free Union",
+                "religion-label": "Religion:",
+                "religion": "I believe in God",
+                "objective-title": "Objective",
+                "objective-text": "To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.",
+                "experience-title": "Work Experience",
+                "education-title": "Education",
+                "references-title": "References",
+                "abilities-title": "Abilities",
+                "interest-title": "Interest",
+                "interest-text": "Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies."
+            },
+            es: {
+                "full-name": "Margarita Salazar Bastidas",
+                "tel-label": "Teléfono:",
+                "email-label": "Correo:",
+                "city-label": "Ciudad:",
+                "marital-status-label": "Estado Civil:",
+                "marital-status": "Unión Libre",
+                "religion-label": "Religión:",
+                "religion": "Creo en Dios",
+                "objective-title": "Objetivo",
+                "objective-text": "Utilizar mis capacidades de liderazgo, fuerte sentido de responsabilidad y compromiso, habilidades interpersonales, dedicación a la excelencia y ética de trabajo en equipo en un entorno profesional.",
+                "experience-title": "Experiencia Laboral",
+                "education-title": "Educación",
+                "references-title": "Referencias",
+                "abilities-title": "Habilidades",
+                "interest-title": "Intereses",
+                "interest-text": "Motivada por resultados, apasionada por la excelencia y con un historial comprobado en liderazgo, trabajo en equipo colaborativo y estrategias centradas en el cliente."
+            }
+        };
+
         const SAMPLE_DATA = {
             experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Surgery Scheduling Coordinator", functions: "Provided customer service, managed documentation, and coordinated surgical procedures." },
             education: { course: "Occupational Health Course", period: "03/2023 - 03/2024", institution: "Sena Institute" },
             reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Medical Director, Sigma Clinic", phone: "+57 3160000000" },
             ability: { title: "Effective Leadership", description: "Ability to lead teams and coordinate activities effectively." }
+        };
+
+        const SAMPLE_DATA_ES = {
+            experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Coordinadora de Programación de Cirugías", functions: "Brindé servicio al cliente, gestioné documentación y coordiné procedimientos quirúrgicos." },
+            education: { course: "Curso de Salud Ocupacional", period: "03/2023 - 03/2024", institution: "Instituto Sena" },
+            reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Directora Médica, Clínica Sigma", phone: "+57 3160000000" },
+            ability: { title: "Liderazgo Efectivo", description: "Capacidad para liderar equipos y coordinar actividades de manera efectiva." }
         };
 
         const blockTemplates = {
@@ -125,6 +195,8 @@
             reference: data => `<div class="cv-block"><div contenteditable="true" class="font-bold text-left">${data.name}</div><div contenteditable="true" class="text-left">${data.position}</div><div class="text-left"><strong>Tel:</strong> <span contenteditable="true">${data.phone}</span></div></div>`,
             ability: data => `<div class="cv-block"><div class="ability-container"><div class="ability-content"><span contenteditable="true" class="font-bold">${data.title}: </span><span contenteditable="true">${data.description}</span></div><div class="ability-dots">${[1,2,3,4,5].map(i => `<div class="ability-dot" data-level="${i}"></div>`).join('')}</div></div></div>`
         };
+
+        let currentLanguage = 'en';
 
         function addBlock(section, data = {}) {
             const container = document.getElementById(`${section}-container`);
@@ -178,7 +250,6 @@
             const profileCircle = document.getElementById('profile-circle');
             const profileInput = document.getElementById('profile-input');
             const profileImage = document.getElementById('profile-image');
-
             profileCircle.addEventListener('click', () => profileInput.click());
             profileInput.addEventListener('change', () => {
                 const file = profileInput.files[0];
@@ -188,6 +259,25 @@
                     reader.readAsDataURL(file);
                 }
             });
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+            document.getElementById('toggle-language').textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(el => {
+                const key = el.dataset.translate;
+                if (TRANSLATIONS[currentLanguage][key]) {
+                    el.textContent = TRANSLATIONS[currentLanguage][key];
+                }
+            });
+            // Reiniciar bloques predeterminados con el idioma actual
+            document.getElementById('experience-container').innerHTML = '';
+            document.getElementById('education-container').innerHTML = '';
+            document.getElementById('reference-container').innerHTML = '';
+            document.getElementById('ability-container').innerHTML = '';
+            const data = currentLanguage === 'en' ? SAMPLE_DATA : SAMPLE_DATA_ES;
+            Object.keys(data).forEach(section => addBlock(section, data[section]));
         }
 
         function initialize() {
@@ -204,6 +294,7 @@
             });
             document.getElementById('add-section').addEventListener('click', addNewSection);
             document.getElementById('print-cv').addEventListener('click', () => window.print());
+            document.getElementById('toggle-language').addEventListener('click', toggleLanguage);
             setupProfileImage();
         }
 
