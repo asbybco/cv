@@ -21,8 +21,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
         body { font-family: 'Roboto', sans-serif; color: #000; }
         .header-section { text-align: center; }
-        .section-title { position: relative; font-size: 2rem; font-weight: bold; margin-bottom: 2rem; text-align: left; }
-        .section-title::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 100%; height: 1px; background-color: #000; }
+        .section-title { font-size: 2rem; font-weight: bold; margin-bottom: 1rem; text-align: left; }
         .profile-circle { width: 120px; height: 120px; border-radius: 50%; background-color: #87CEEB; overflow: hidden; margin: 0 auto; cursor: pointer; box-shadow: 0 0 10px rgba(135, 206, 235, 0.7); transition: box-shadow 0.3s ease; }
         .profile-circle:hover { box-shadow: 0 0 15px rgba(135, 206, 235, 0.9); }
         .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
@@ -42,12 +41,12 @@
         .action-button:hover { background-color: #2563eb; }
         .header-section h1 { font-size: 3rem; }
         .header-section p { font-size: 1.25rem; line-height: 1.75rem; }
-        /* Estilo del botón de idioma */
+        hr { border: none; border-top: 1px solid #000; margin: 1.5rem 0; }
         .language-btn { 
             position: absolute; 
             top: 10px; 
             right: 10px; 
-            background: rgba(0, 0, 0, 0.7); /* Fondo negro con 70% de opacidad */
+            background: rgba(0, 0, 0, 0.7);
             color: white; 
             padding: 8px 16px; 
             border-radius: 20px; 
@@ -56,11 +55,9 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
             background-size: cover; 
             background-position: center;
-            text-shadow: 0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000; /* Borde negro fino */
+            text-shadow: 0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000;
         }
-        .language-btn:hover { 
-            transform: scale(1.05); 
-        }
+        .language-btn:hover { transform: scale(1.05); }
         @media print { .buttons-container, .action-buttons, .btn, .language-btn { display: none !important; } }
     </style>
 </head>
@@ -86,6 +83,7 @@
         <hr class="my-6 border-black">
         <div class="mb-12">
             <h2 class="section-title" data-translate="objective-title">Objective</h2>
+            <hr class="my-6 border-black">
             <p contenteditable="true" class="mt-6 text-left" data-translate="objective-text">To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.</p>
         </div>
         <div class="mb-12">
@@ -96,6 +94,7 @@
                     <button class="btn btn-remove" data-section="experience">-</button>
                 </div>
             </div>
+            <hr class="my-6 border-black">
             <div id="experience-container" class="mt-6"></div>
         </div>
         <div class="mb-12">
@@ -106,6 +105,7 @@
                     <button class="btn btn-remove" data-section="education">-</button>
                 </div>
             </div>
+            <hr class="my-6 border-black">
             <div id="education-container" class="mt-6"></div>
         </div>
         <div class="mb-12">
@@ -116,6 +116,7 @@
                     <button class="btn btn-remove" data-section="reference">-</button>
                 </div>
             </div>
+            <hr class="my-6 border-black">
             <div id="reference-container" class="mt-6"></div>
         </div>
         <div class="mb-12">
@@ -126,10 +127,12 @@
                     <button class="btn btn-remove" data-section="ability">-</button>
                 </div>
             </div>
+            <hr class="my-6 border-black">
             <div id="ability-container" class="mt-6"></div>
         </div>
         <div class="mb-12" id="interest-section">
             <h2 class="section-title" data-translate="interest-title">Interest</h2>
+            <hr class="my-6 border-black">
             <div contenteditable="true" class="mt-6 text-left" data-translate="interest-text">Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.</div>
         </div>
         <div class="action-buttons">
@@ -240,6 +243,7 @@
                         <button class="btn btn-remove" data-section="custom">-</button>
                     </div>
                 </div>
+                <hr class="my-6 border-black">
                 <div class="mt-6" contenteditable="true">Write your content here...</div>
             `;
             const interestSection = document.getElementById('interest-section');
@@ -267,9 +271,7 @@
             currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
             const button = document.getElementById('toggle-language');
             button.textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
-            button.style.backgroundImage = currentLanguage === 'en' ?
-                `url('/images/EN.svg')` :
-                `url('/images/CO.svg')`;
+            button.style.backgroundImage = currentLanguage === 'en' ? `url('/images/EN.svg')` : `url('/images/CO.svg')`;
             const elements = document.querySelectorAll('[data-translate]');
             elements.forEach(el => {
                 const key = el.dataset.translate;
@@ -277,7 +279,6 @@
                     el.textContent = TRANSLATIONS[currentLanguage][key];
                 }
             });
-            // Reiniciar bloques predeterminados con el idioma actual (como estaba originalmente)
             document.getElementById('experience-container').innerHTML = '';
             document.getElementById('education-container').innerHTML = '';
             document.getElementById('reference-container').innerHTML = '';
