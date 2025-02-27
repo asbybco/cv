@@ -47,24 +47,26 @@
             position: absolute; 
             top: 10px; 
             right: 10px; 
-            background: linear-gradient(135deg, #6b7280, #4b5563); 
+            background: rgba(0, 0, 0, 0.7); /* Fondo negro con 70% de opacidad */
             color: white; 
             padding: 8px 16px; 
             border-radius: 20px; 
             font-weight: 500; 
-            transition: transform 0.2s ease, background 0.3s ease; 
+            transition: transform 0.2s ease; 
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+            background-size: cover; 
+            background-position: center;
+            text-shadow: 0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000; /* Borde negro fino */
         }
         .language-btn:hover { 
             transform: scale(1.05); 
-            background: linear-gradient(135deg, #4b5563, #374151); 
         }
         @media print { .buttons-container, .action-buttons, .btn, .language-btn { display: none !important; } }
     </style>
 </head>
 <body class="bg-white p-4 md:p-8">
     <div class="max-w-4xl mx-auto p-8 relative" id="cv-container">
-        <button class="language-btn" id="toggle-language">EN/ES</button>
+        <button class="language-btn" id="toggle-language" style="background-image: url('/images/EN.svg');">EN/ES</button>
         <div class="header-section mb-8">
             <div class="profile-circle mb-4" id="profile-circle">
                 <img id="profile-image" src="/images/default-profile.jpg" alt="Profile Photo" />
@@ -263,7 +265,11 @@
 
         function toggleLanguage() {
             currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
-            document.getElementById('toggle-language').textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
+            const button = document.getElementById('toggle-language');
+            button.textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
+            button.style.backgroundImage = currentLanguage === 'en' ?
+                `url('/images/EN.svg')` :
+                `url('/images/CO.svg')`;
             const elements = document.querySelectorAll('[data-translate]');
             elements.forEach(el => {
                 const key = el.dataset.translate;
@@ -271,7 +277,7 @@
                     el.textContent = TRANSLATIONS[currentLanguage][key];
                 }
             });
-            // Reiniciar bloques predeterminados con el idioma actual
+            // Reiniciar bloques predeterminados con el idioma actual (como estaba originalmente)
             document.getElementById('experience-container').innerHTML = '';
             document.getElementById('education-container').innerHTML = '';
             document.getElementById('reference-container').innerHTML = '';
