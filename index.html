@@ -311,7 +311,6 @@
             button.textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
             button.style.backgroundImage = currentLanguage === 'en' ? `url('/images/EN.svg')` : `url('/images/CO.svg')`;
             
-            // Update all translated fields
             const elements = document.querySelectorAll('[data-translate]');
             elements.forEach(el => {
                 const key = el.dataset.translate;
