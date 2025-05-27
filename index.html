@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CV Template</title>
+    <!-- Metadatos para vistas preliminares -->
+    <meta name="description" content="CV interactivo de Margarita Salazar Bastidas, profesional con experiencia en liderazgo y coordinación.">
+    <meta property="og:title" content="CV de Margarita Salazar Bastidas">
+    <meta property="og:description" content="Explora el CV interactivo de Margarita Salazar Bastidas, con habilidades en liderazgo, trabajo en equipo y más.">
+    <meta property="og:image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://vsbcv.pages.dev">
+    <meta itemprop="image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CV de Margarita Salazar Bastidas">
+    <meta name="twitter:description" content="CV interactivo con experiencia en liderazgo y coordinación.">
+    <meta name="twitter:image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body { font-family: 'Roboto', sans-serif; color: #000; }
+        .header-section { text-align: center; }
+        .section-title { font-size: 2rem; font-weight: bold; margin-bottom: 1rem; text-align: left; }
+        .profile-circle { width: 120px; height: 120px; border-radius: 50%; background-color: #87CEEB; overflow: hidden; margin: 0 auto; cursor: pointer; box-shadow: 0 0 10px rgba(135, 206, 235, 0.7); transition: box-shadow 0.3s ease; }
+        .profile-circle:hover { box-shadow: 0 0 15px rgba(135, 206, 235, 0.9); }
+        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .section-header { position: relative; }
+        .buttons-container { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; }
+        .btn { cursor: pointer; width: 25px; height: 25px; border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .btn-add { background-color: #22c55e; }
+        .btn-remove { background-color: #ef4444; display: none; }
+        .cv-block { padding-bottom: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+        .ability-container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        .ability-content { flex: 1; min-width: 0; text-align: left; }
+        .ability-dots { display: flex; margin-left: 10px; }
+        .ability-dot { width: 15px; height: 15px; border-radius: 50%; background-color: #ccc; margin-right: 5px; cursor: pointer; }
+        [contenteditable="true"]:focus { outline: 1px solid #ddd; padding: 2px; }
+        .action-buttons { margin-top: 50px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; }
+        .action-button { padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 0 10px; background-color: #3b82f6; color: white; }
+        .action-button:hover { background-color: #2563eb; }
+        .header-section h1 { font-size: 3rem; }
+        .header-section p { font-size: 1.25rem; line-height: 1.75rem; }
+        hr { border: none; border-top: 1px solid #000; margin: 1.5rem 0; }
+        .language-btn { 
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: rgba(0, 0, 0, 0.7);
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-weight: 500; 
+            transition: transform 0.2s ease; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+            background-size: cover; 
+            background-position: center;
+            text-shadow: 0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000;
+        }
+        .language-btn:hover { transform: scale(1.05); }
+        .editable-field { position: relative; }
+        .editable-field[data-empty="true"] { color: #666; font-style: italic; }
+        @media print { .buttons-container, .action-buttons, .btn, .language-btn { display: none !important; } }
+    </style>
+</head>
+<body class="bg-white p-4 md:p-8">
+    <div class="max-w-4xl mx-auto p-8 relative" id="cv-container">
+        <button class="language-btn" id="toggle-language" style="background-image: url('/images/EN.svg');">EN/ES</button>
+        <div class="header-section mb-8">
+            <div class="profile-circle mb-4" id="profile-circle">
+                <img id="profile-image" src="/images/default-profile.jpg" alt="Profile Photo" />
+            </div>
+            <input type="file" id="profile-input" accept="image/*" style="display: none;" />
+            <h1 class="font-bold mb-4 editable-field" data-translate="full-name" data-default="Margarita Salazar Bastidas">Margarita Salazar Bastidas</h1>
+            <p class="mb-1">
+                <strong data-translate="tel-label">Tel:</strong> <span class="editable-field" data-default="789 000 0000">789 000 0000</span> | 
+                <strong data-translate="email-label">Email:</strong> <span class="editable-field" data-default="example@gmail.com">example@gmail.com</span>
+            </p>
+            <p class="mb-1"><strong data-translate="city-label">City:</strong> <span class="editable-field" data-default="Miami Florida">Miami Florida</span></p>
+            <p>
+                <strong data-translate="marital-status-label">Marital Status:</strong> <span class="editable-field" data-translate="marital-status" data-default="free Union">free Union</span> | 
+                <strong data-translate="religion-label">Religion:</strong> <span class="editable-field" data-translate="religion" data-default="I believe in God">I believe in God</span>
+            </p>
+        </div>
+        <hr class="my-6 border-black">
+        <div class="mb-12">
+            <h2 class="section-title" data-translate="objective-title">Objective</h2>
+            <hr class="my-6 border-black">
+            <p class="mt-6 text-left editable-field" data-translate="objective-text" data-default="To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.">To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.</p>
+        </div>
+        <div class="mb-12">
+            <div class="section-header">
+                <h2 class="section-title" data-translate="experience-title">Work Experience</h2>
+                <div class="buttons-container">
+                    <button class="btn btn-add" data-section="experience">+</button>
+                    <button class="btn btn-remove" data-section="experience">-</button>
+                </div>
+            </div>
+            <hr class="my-6 border-black">
+            <div id="experience-container" class="mt-6"></div>
+        </div>
+        <div class="mb-12">
+            <div class="section-header">
+                <h2 class="section-title" data-translate="education-title">Education</h2>
+                <div class="buttons-container">
+                    <button class="btn btn-add" data-section="education">+</button>
+                    <button class="btn btn-remove" data-section="education">-</button>
+                </div>
+            </div>
+            <hr class="my-6 border-black">
+            <div id="education-container" class="mt-6"></div>
+        </div>
+        <div class="mb-12">
+            <div class="section-header">
+                <h2 class="section-title" data-translate="references-title">References</h2>
+                <div class="buttons-container">
+                    <button class="btn btn-add" data-section="reference">+</button>
+                    <button class="btn btn-remove" data-section="reference">-</button>
+                </div>
+            </div>
+            <hr class="my-6 border-black">
+            <div id="reference-container" class="mt-6"></div>
+        </div>
+        <div class="mb-12">
+            <div class="section-header">
+                <h2 class="section-title" data-translate="abilities-title">Abilities</h2>
+                <div class="buttons-container">
+                    <button class="btn btn-add" data-section="ability">+</button>
+                    <button class="btn btn-remove" data-section="ability">-</button>
+                </div>
+            </div>
+            <hr class="my-6 border-black">
+            <div id="ability-container" class="mt-6"></div>
+        </div>
+        <div class="mb-12" id="interest-section">
+            <h2 class="section-title" data-translate="interest-title">Interest</h2>
+            <hr class="my-6 border-black">
+            <div class="mt-6 text-left editable-field" data-translate="interest-text" data-default="Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.">Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.</div>
+        </div>
+        <div class="action-buttons">
+            <button class="action-button" id="add-section">Add Section</button>
+            <button class="action-button" id="print-cv">Print CV</button>
+        </div>
+    </div>
+    <script>
+        const TRANSLATIONS = {
+            en: {
+                "full-name": "Margarita Salazar Bastidas",
+                "tel-label": "Tel:",
+                "email-label": "Email:",
+                "city-label": "City:",
+                "marital-status-label": "Marital Status:",
+                "marital-status": "free Union",
+                "religion-label": "Religion:",
+                "religion": "I believe in God",
+                "objective-title": "Objective",
+                "objective-text": "To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.",
+                "experience-title": "Work Experience",
+                "education-title": "Education",
+                "references-title": "References",
+                "abilities-title": "Abilities",
+                "interest-title": "Interest",
+                "interest-text": "Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies."
+            },
+            es: {
+                "full-name": "Margarita Salazar Bastidas",
+                "tel-label": "Teléfono:",
+                "email-label": "Correo:",
+                "city-label": "Ciudad:",
+                "marital-status-label": "Estado Civil:",
+                "marital-status": "Unión Libre",
+                "religion-label": "Religión:",
+                "religion": "Creo en Dios",
+                "objective-title": "Objetivo",
+                "objective-text": "Utilizar mis capacidades de liderazgo, fuerte sentido de responsabilidad y compromiso, habilidades interpersonales, dedicación a la excelencia y ética de trabajo en equipo en un entorno profesional.",
+                "experience-title": "Experiencia Laboral",
+                "education-title": "Educación",
+                "references-title": "Referencias",
+                "abilities-title": "Habilidades",
+                "interest-title": "Intereses",
+                "interest-text": "Motivada por resultados, apasionada por la excelencia y con un historial comprobado en liderazgo, trabajo en equipo colaborativo y estrategias centradas en el cliente."
+            }
+        };
+
+        const SAMPLE_DATA = {
+            experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Surgery Scheduling Coordinator", functions: "Provided customer service, managed documentation, and coordinated surgical procedures." },
+            education: { course: "Occupational Health Course", period: "03/2023 - 03/2024", institution: "Sena Institute" },
+            reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Medical Director, Sigma Clinic", phone: "+57 3160000000" },
+            ability: { title: "Effective Leadership", description: "Ability to lead teams and coordinate activities effectively." }
+        };
+
+        const SAMPLE_DATA_ES = {
+            experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Coordinadora de Programación de Cirugías", functions: "Brindé servicio al cliente, gestioné documentación y coordiné procedimientos quirúrgicos." },
+            education: { course: "Curso de Salud Ocupacional", period: "03/2023 - 03/2024", institution: "Instituto Sena" },
+            reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Directora Médica, Clínica Sigma", phone: "+57 3160000000" },
+            ability: { title: "Liderazgo Efectivo", description: "Capacidad para liderar equipos y coordinar actividades de manera efectiva." }
+        };
+
+        const blockTemplates = {
+            experience: data => `<div class="cv-block">
+                <div class="flex justify-between mb-2">
+                    <div class="w-2/3 text-left">
+                        <span class="font-bold editable-field" data-default="${data.company}">${data.company}</span>
+                        <div class="editable-field" data-default="${data.position}">${data.position}</div>
+                    </div>
+                    <div class="w-1/3 text-right editable-field" data-default="${data.period}">${data.period}</div>
+                </div>
+                <div class="text-left">
+                    <div class="uppercase text-sm font-bold">FUNCTIONS:</div>
+                    <div class="editable-field" data-default="${data.functions}">${data.functions}</div>
+                </div>
+            </div>`,
+            education: data => `<div class="cv-block">
+                <div class="flex justify-between mb-2">
+                    <div class="w-2/3 text-left">
+                        <div class="font-bold editable-field" data-default="${data.course}">${data.course}</div>
+                        <div class="editable-field" data-default="${data.institution}">${data.institution}</div>
+                    </div>
+                    <div class="w-1/3 text-right editable-field" data-default="${data.period}">${data.period}</div>
+                </div>
+            </div>`,
+            reference: data => `<div class="cv-block">
+                <div class="font-bold text-left editable-field" data-default="${data.name}">${data.name}</div>
+                <div class="text-left editable-field" data-default="${data.position}">${data.position}</div>
+                <div class="text-left">
+                    <strong>Tel:</strong> <span class="editable-field" data-default="${data.phone}">${data.phone}</span>
+                </div>
+            </div>`,
+            ability: data => `<div class="cv-block">
+                <div class="ability-container">
+                    <div class="ability-content">
+                        <span class="font-bold editable-field" data-default="${data.title}">${data.title}: </span>
+                        <span class="editable-field" data-default="${data.description}">${data.description}</span>
+                    </div>
+                    <div class="ability-dots">${[1,2,3,4,5].map(i => `<div class="ability-dot" data-level="${i}"></div>`).join('')}</div>
+                </div>
+            </div>`
+        };
+
+        let currentLanguage = 'en';
+
+        function addBlock(section, data = {}) {
+            const container = document.getElementById(`${section}-container`);
+            container.insertAdjacentHTML('beforeend', blockTemplates[section](data));
+            if (section === 'ability') setupAbilityDots(container.lastElementChild);
+            setupEditableFields(container.lastElementChild);
+            updateRemoveButtons();
+        }
+
+        function setupAbilityDots(block) {
+            const dots = block.querySelectorAll('.ability-dot');
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    const level = parseInt(dot.dataset.level);
+                    dots.forEach((d, i) => {
+                        d.style.backgroundColor = (i + 1) <= level ? '#000' : '#ccc';
+                    });
+                });
+            });
+            dots.forEach(dot => dot.style.backgroundColor = '#000');
+        }
+
+        function updateRemoveButtons() {
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                const section = btn.dataset.section;
+                if (section) {
+                    const container = document.getElementById(`${section}-container`);
+                    btn.style.display = container.children.length > 1 ? 'flex' : 'none';
+                }
+            });
+        }
+
+        function addNewSection() {
+            const newSection = document.createElement('div');
+            newSection.className = 'mb-12 custom-section';
+            newSection.innerHTML = `
+                <div class="section-header">
+                    <h2 class="section-title editable-field" data-default="New Section">New Section</h2>
+                    <div class="buttons-container">
+                        <button class="btn btn-remove" data-section="custom">-</button>
+                    </div>
+                </div>
+                <hr class="my-6 border-black">
+                <div class="mt-6 editable-field" data-default="Write your content here...">Write your content here...</div>
+            `;
+            const interestSection = document.getElementById('interest-section');
+            interestSection.before(newSection);
+            setupEditableFields(newSection);
+            newSection.querySelector('.btn-remove').addEventListener('click', () => newSection.remove());
+            newSection.querySelector('.btn-remove').style.display = 'flex';
+        }
+
+        function setupProfileImage() {
+            const profileCircle = document.getElementById('profile-circle');
+            const profileInput = document.getElementById('profile-input');
+            const profileImage = document.getElementById('profile-image');
+            profileCircle.addEventListener('click', () => profileInput.click());
+            profileInput.addEventListener('change', () => {
+                const file = profileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => profileImage.src = reader.result;
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+            const button = document.getElementById('toggle-language');
+            button.textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
+            button.style.backgroundImage = currentLanguage === 'en' ? `url('/images/EN.svg')` : `url('/images/CO.svg')`;
+            
+            // Update all translated fields
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(el => {
+                const key = el.dataset.translate;
+                if (TRANSLATIONS[currentLanguage][key]) {
+                    if (el.classList.contains('editable-field')) {
+                        el.dataset.default = TRANSLATIONS[currentLanguage][key];
+                        if (el.getAttribute('data-empty') === "true") {
+                            el.textContent = TRANSLATIONS[currentLanguage][key];
+                        }
+                    } else {
+                        el.textContent = TRANSLATIONS[currentLanguage][key];
+                    }
+                }
+            });
+            
+            // Clear and repopulate dynamic sections
+            document.getElementById('experience-container').innerHTML = '';
+            document.getElementById('education-container').innerHTML = '';
+            document.getElementById('reference-container').innerHTML = '';
+            document.getElementById('ability-container').innerHTML = '';
+            
+            const data = currentLanguage === 'en' ? SAMPLE_DATA : SAMPLE_DATA_ES;
+            Object.keys(data).forEach(section => addBlock(section, data[section]));
+        }
+
+        function setupEditableFields(container = document) {
+            const fields = container.querySelectorAll('.editable-field');
+            
+            fields.forEach(field => {
+                // Set contenteditable attribute
+                field.setAttribute('contenteditable', 'true');
+                
+                // Store default value if not already set
+                if (!field.dataset.default && field.textContent.trim()) {
+                    field.dataset.default = field.textContent.trim();
+                }
+                
+                // Check if field is empty and set data-empty attribute
+                if (!field.textContent.trim() || field.textContent === field.dataset.default) {
+                    field.setAttribute('data-empty', 'true');
+                } else {
+                    field.setAttribute('data-empty', 'false');
+                }
+                
+                // Focus event: Clear default content
+                field.addEventListener('focus', function() {
+                    if (this.getAttribute('data-empty') === 'true') {
+                        this.textContent = '';
+                        this.setAttribute('data-empty', 'false');
+                    }
+                });
+                
+                // Blur event: Restore default if empty
+                field.addEventListener('blur', function() {
+                    if (!this.textContent.trim()) {
+                        this.textContent = this.dataset.default;
+                        this.setAttribute('data-empty', 'true');
+                    } else {
+                        this.setAttribute('data-empty', 'false');
+                    }
+                });
+                
+                // Input event: Update data-empty attribute
+                field.addEventListener('input', function() {
+                    this.setAttribute('data-empty', !this.textContent.trim() ? 'true' : 'false');
+                });
+            });
+        }
+
+        function initialize() {
+            Object.keys(SAMPLE_DATA).forEach(section => addBlock(section, SAMPLE_DATA[section]));
+            
+            document.querySelectorAll('.btn-add').forEach(btn => {
+                btn.addEventListener('click', () => addBlock(btn.dataset.section, {}));
+            });
+            
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const container = document.getElementById(`${btn.dataset.section}-container`);
+                    if (container.children.length > 1) container.lastElementChild.remove();
+                    updateRemoveButtons();
+                });
+            });
+            
+            document.getElementById('add-section').addEventListener('click', addNewSection);
+            document.getElementById('print-cv').addEventListener('click', () => window.print());
+            document.getElementById('toggle-language').addEventListener('click', toggleLanguage);
+            
+            setupProfileImage();
+            setupEditableFields();
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
