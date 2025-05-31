@@ -1,409 +1,503 @@
-<!DOCTYPE html>
-<html lang="en">
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive CV Template</title>
-    <!-- Metadatos para vistas preliminares -->
-    <meta name="description" content="CV interactivo de Margarita Salazar Bastidas, profesional con experiencia en liderazgo y coordinación.">
-    <meta property="og:title" content="CV de Margarita Salazar Bastidas">
-    <meta property="og:description" content="Explora el CV interactivo de Margarita Salazar Bastidas, con habilidades en liderazgo, trabajo en equipo y más.">
-    <meta property="og:image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://vsbcv.pages.dev">
-    <meta itemprop="image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="CV de Margarita Salazar Bastidas">
-    <meta name="twitter:description" content="CV interactivo con experiencia en liderazgo y coordinación.">
-    <meta name="twitter:image" content="https://vsbcv.pages.dev/images/default-profile.jpg">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <title>CV Creator Profesional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-        body { font-family: 'Roboto', sans-serif; color: #000; }
-        .header-section { text-align: center; }
-        .section-title { font-size: 2rem; font-weight: bold; margin-bottom: 1rem; text-align: left; }
-        .profile-circle { width: 120px; height: 120px; border-radius: 50%; background-color: #87CEEB; overflow: hidden; margin: 0 auto; cursor: pointer; box-shadow: 0 0 10px rgba(135, 206, 235, 0.7); transition: box-shadow 0.3s ease; }
-        .profile-circle:hover { box-shadow: 0 0 15px rgba(135, 206, 235, 0.9); }
-        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .section-header { position: relative; }
-        .buttons-container { position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; gap: 5px; }
-        .btn { cursor: pointer; width: 25px; height: 25px; border-radius: 50%; color: white; font-weight: bold; display: flex; align-items: center; justify-content: center; }
-        .btn-add { background-color: #22c55e; }
-        .btn-remove { background-color: #ef4444; display: none; }
-        .cv-block { padding-bottom: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; }
-        .ability-container { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .ability-content { flex: 1; min-width: 0; text-align: left; }
-        .ability-dots { display: flex; margin-left: 10px; }
-        .ability-dot { width: 15px; height: 15px; border-radius: 50%; background-color: #ccc; margin-right: 5px; cursor: pointer; }
-        [contenteditable="true"]:focus { outline: 1px solid #ddd; padding: 2px; }
-        .action-buttons { margin-top: 50px; padding-top: 20px; border-top: 1px solid #eaeaea; text-align: center; }
-        .action-button { padding: 10px 20px; border-radius: 8px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin: 0 10px; background-color: #3b82f6; color: white; }
-        .action-button:hover { background-color: #2563eb; }
-        .header-section h1 { font-size: 3rem; }
-        .header-section p { font-size: 1.25rem; line-height: 1.75rem; }
-        hr { border: none; border-top: 1px solid #000; margin: 1.5rem 0; }
-        .language-btn { 
-            position: absolute; 
-            top: 10px; 
-            right: 10px; 
-            background: rgba(0, 0, 0, 0.7);
-            color: white; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            font-weight: 500; 
-            transition: transform 0.2s ease; 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-            background-size: cover; 
-            background-position: center;
-            text-shadow: 0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000;
+        body { font-family: 'Roboto', sans-serif; }
+        .cv-section { margin-bottom: 1.5rem; }
+        .cv-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: #1f2937; }
+        .cv-subtitle { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
+        .cv-text { font-size: 1rem; margin-bottom: 0.5rem; color: #4b5563; }
+        .cv-input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; transition: border-color 0.2s; }
+        .cv-input:focus { border-color: #3b82f6; outline: none; }
+        .cv-button { padding: 0.5rem 1rem; background-color: #3b82f6; color: white; border: none; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .cv-button:hover { background-color: #2563eb; transform: translateY(-1px); }
+        .icon-button { padding: 0.25rem; background-color: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 1.25rem; }
+        .icon-button:hover { color: #b91c1c; }
+        .add-button { padding: 0.25rem 0.5rem; background-color: #bfdbfe; color: #1d4ed8; border: none; border-radius: 50%; cursor: pointer; font-size: 1rem; line-height: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s; }
+        .add-button:hover { background-color: #93c5fd; transform: scale(1.1); }
+        .profile-pic { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin-bottom: 1rem; }
+        .skill-level { display: inline-flex; gap: 0.25rem; margin-left: 0.5rem; }
+        .skill-level-circle { width: 10px; height: 10px; border-radius: 50%; background-color: #d1d5db; }
+        .skill-level-circle.filled { background-color: #3b82f6; }
+        .control-panel { background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .no-print { display: block; }
+        .section-header { display: flex; align-items: center; }
+
+        /* Estilos para viñeta y conector vertical (excluyendo Habilidades) */
+        .education-entry, .experience-entry, .reference-entry, .custom-entry {
+            position: relative;
+            margin-left: 1.5rem;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
         }
-        .language-btn:hover { transform: scale(1.05); }
-        .editable-field { position: relative; }
-        .editable-field[data-empty="true"] { color: #666; font-style: italic; }
-        @media print { .buttons-container, .action-buttons, .btn, .language-btn { display: none !important; } }
+        .education-entry::before, .experience-entry::before, .reference-entry::before, .custom-entry::before {
+            content: '';
+            position: absolute;
+            left: -0.5rem;
+            top: 0.5rem;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: #1f2937;
+            border-radius: 50%;
+        }
+        .education-entry:not(:last-child)::after, .experience-entry:not(:last-child)::after, .reference-entry:not(:last-child)::after, .custom-entry:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -0.25rem;
+            top: 1rem;
+            bottom: -1rem;
+            width: 1px;
+            background-color: #1f2937;
+        }
+
+@media print {
+    body { background-color: white; margin: 0; padding: 0; }
+    .no-print { display: none !important; }
+    .cv-input { border: none; }
+    .cv-section { margin-bottom: 0.75rem !important; }
+    .profile-pic { border: 1px solid #e5e7eb; }
+    .container { 
+        padding: 0 !important; 
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+    #cv-content { 
+        margin: 0 !important;
+        padding: 1rem !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: white !important;
+    }
+}
     </style>
 </head>
-<body class="bg-white p-4 md:p-8">
-    <div class="max-w-4xl mx-auto p-8 relative" id="cv-container">
-        <button class="language-btn" id="toggle-language" style="background-image: url('/images/EN.svg');">EN/ES</button>
-        <div class="header-section mb-8">
-            <div class="profile-circle mb-4" id="profile-circle">
-                <img id="profile-image" src="/images/default-profile.jpg" alt="Profile Photo" />
+<body class="bg-white">
+    <div class="container mx-auto p-4">
+        <div class="control-panel flex justify-between items-center mb-4 no-print">
+            <h1 class="text-2xl font-bold text-white">CV Creator Profesional</h1>
+            <div class="flex space-x-2">
+                <button id="print-btn" class="cv-button flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Imprimir
+                </button>
+                <button id="save-btn" class="cv-button flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    Guardar
+                </button>
+                <button id="restore-btn" class="cv-button flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Restaurar
+                </button>
+                <button id="add-custom-section" class="cv-button flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Nueva Sección
+                </button>
             </div>
-            <input type="file" id="profile-input" accept="image/*" style="display: none;" />
-            <h1 class="font-bold mb-4 editable-field" data-translate="full-name" data-default="Margarita Salazar Bastidas">Margarita Salazar Bastidas</h1>
-            <p class="mb-1">
-                <strong data-translate="tel-label">Tel:</strong> <span class="editable-field" data-default="789 000 0000">789 000 0000</span> | 
-                <strong data-translate="email-label">Email:</strong> <span class="editable-field" data-default="example@gmail.com">example@gmail.com</span>
-            </p>
-            <p class="mb-1"><strong data-translate="city-label">City:</strong> <span class="editable-field" data-default="Miami Florida">Miami Florida</span></p>
-            <p>
-                <strong data-translate="marital-status-label">Marital Status:</strong> <span class="editable-field" data-translate="marital-status" data-default="free Union">free Union</span> | 
-                <strong data-translate="religion-label">Religion:</strong> <span class="editable-field" data-translate="religion" data-default="I believe in God">I believe in God</span>
-            </p>
         </div>
-        <hr class="my-6 border-black">
-        <div class="mb-12">
-            <h2 class="section-title" data-translate="objective-title">Objective</h2>
-            <hr class="my-6 border-black">
-            <p class="mt-6 text-left editable-field" data-translate="objective-text" data-default="To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.">To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.</p>
-        </div>
-        <div class="mb-12">
-            <div class="section-header">
-                <h2 class="section-title" data-translate="experience-title">Work Experience</h2>
-                <div class="buttons-container">
-                    <button class="btn btn-add" data-section="experience">+</button>
-                    <button class="btn btn-remove" data-section="experience">-</button>
+        <div id="cv-content" class="bg-white p-6 rounded-lg shadow-lg">
+            <div class="flex items-center mb-6">
+                <div>
+                    <input type="file" id="profile-pic-input" class="no-print" accept="image/*" style="display: none;">
+                    <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150" alt="Foto de perfil">
+                    <button id="upload-pic-btn" class="cv-button no-print">Subir Foto</button>
+                </div>
+                <div class="ml-6 flex-1">
+                    <div class="relative">
+                        <input type="text" id="name-input" class="cv-title cv-input" placeholder="Nombre Completo" onfocus="this.placeholder=''">
+                    </div>
+                    <div class="relative" id="profession-container">
+                        <input type="text" id="profession-input" class="cv-subtitle cv-input" placeholder="Profesión o Título" onfocus="this.placeholder=''">
+                        <button id="remove-profession" class="icon-button no-print absolute top-0 right-0">×</button>
+                    </div>
                 </div>
             </div>
-            <hr class="my-6 border-black">
-            <div id="experience-container" class="mt-6"></div>
-        </div>
-        <div class="mb-12">
-            <div class="section-header">
-                <h2 class="section-title" data-translate="education-title">Education</h2>
-                <div class="buttons-container">
-                    <button class="btn btn-add" data-section="education">+</button>
-                    <button class="btn btn-remove" data-section="education">-</button>
+            <div class="cv-section">
+                <h2 class="cv-title">Información Personal</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <div class="flex-1">
+                            <label class="cv-subtitle">Correo Electrónico</label>
+                            <input type="email" class="cv-input" placeholder="Ingrese su correo" onfocus="this.placeholder=''">
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        <div class="flex-1">
+                            <label class="cv-subtitle">Teléfono</label>
+                            <input type="tel" class="cv-input" placeholder="Ingrese su teléfono" onfocus="this.placeholder=''">
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <div class="flex-1">
+                            <label class="cv-subtitle">Ubicación</label>
+                            <input type="text" class="cv-input" placeholder="Ingrese su ubicación" onfocus="this.placeholder=''">
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <div class="flex-1">
+                            <label class="cv-subtitle">Estado Civil</label>
+                            <input type="text" class="cv-input" placeholder="Ingrese su estado civil" onfocus="this.placeholder=''">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <hr class="my-6 border-black">
-            <div id="education-container" class="mt-6"></div>
-        </div>
-        <div class="mb-12">
-            <div class="section-header">
-                <h2 class="section-title" data-translate="references-title">References</h2>
-                <div class="buttons-container">
-                    <button class="btn btn-add" data-section="reference">+</button>
-                    <button class="btn btn-remove" data-section="reference">-</button>
+            <div class="cv-section relative">
+                <div class="section-header">
+                    <h2 class="cv-title inline-block">Objetivo</h2>
+                </div>
+                <div id="objective-container">
+                    <textarea id="objective-input" class="cv-input" placeholder="Ingrese su objetivo profesional" onfocus="this.placeholder=''"></textarea>
                 </div>
             </div>
-            <hr class="my-6 border-black">
-            <div id="reference-container" class="mt-6"></div>
-        </div>
-        <div class="mb-12">
-            <div class="section-header">
-                <h2 class="section-title" data-translate="abilities-title">Abilities</h2>
-                <div class="buttons-container">
-                    <button class="btn btn-add" data-section="ability">+</button>
-                    <button class="btn btn-remove" data-section="ability">-</button>
+            <div class="cv-section relative">
+                <div class="section-header">
+                    <h2 class="cv-title inline-block">Educación</h2>
+                    <button id="add-education" class="add-button no-print ml-2">+</button>
+                </div>
+                <div id="education-container">
+                    <div class="education-entry relative">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="cv-subtitle">Institución</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese la institución" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Título</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese el título" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Año de Graduación</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese el año" onfocus="this.placeholder=''">
+                            </div>
+                        </div>
+                        <button class="icon-button remove-education no-print absolute top-0 right-0">×</button>
+                    </div>
                 </div>
             </div>
-            <hr class="my-6 border-black">
-            <div id="ability-container" class="mt-6"></div>
-        </div>
-        <div class="mb-12" id="interest-section">
-            <h2 class="section-title" data-translate="interest-title">Interest</h2>
-            <hr class="my-6 border-black">
-            <div class="mt-6 text-left editable-field" data-translate="interest-text" data-default="Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.">Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies.</div>
-        </div>
-        <div class="action-buttons">
-            <button class="action-button" id="add-section">Add Section</button>
-            <button class="action-button" id="print-cv">Print CV</button>
+            <div class="cv-section relative">
+                <div class="section-header">
+                    <h2 class="cv-title inline-block">Experiencia Laboral</h2>
+                    <button id="add-experience" class="add-button no-print ml-2">+</button>
+                </div>
+                <div id="experience-container">
+                    <div class="experience-entry relative">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="cv-subtitle">Empresa</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese la empresa" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Puesto</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese el puesto" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Fecha de Inicio</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese la fecha de inicio" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Fecha de Fin</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese la fecha de fin" onfocus="this.placeholder=''">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="cv-subtitle">Descripción</label>
+                                <textarea class="cv-input" placeholder="Ingrese la descripción" onfocus="this.placeholder=''"></textarea>
+                            </div>
+                        </div>
+                        <button class="icon-button remove-experience no-print absolute top-0 right-0">×</button>
+                    </div>
+                </div>
+            </div>
+            <div class="cv-section relative">
+                <div class="section-header">
+                    <h2 class="cv-title inline-block">Habilidades</h2>
+                    <button id="add-skill" class="add-button no-print ml-2">+</button>
+                </div>
+                <div id="skills-container" class="flex flex-wrap gap-2">
+                    <div class="skill-entry relative flex items-center">
+                        <input type="text" class="cv-input" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
+                        <div class="skill-level no-print">
+                            <span class="skill-level-circle" data-level="1"></span>
+                            <span class="skill-level-circle" data-level="2"></span>
+                            <span class="skill-level-circle" data-level="3"></span>
+                            <span class="skill-level-circle" data-level="4"></span>
+                            <span class="skill-level-circle" data-level="5"></span>
+                        </div>
+                        <input type="hidden" class="skill-level-input" value="0">
+                        <button class="icon-button remove-skill no-print absolute top-0 right-0">×</button>
+                    </div>
+                </div>
+            </div>
+            <div class="cv-section relative">
+                <div class="section-header">
+                    <h2 class="cv-title inline-block">Referencias</h2>
+                    <button id="add-reference" class="add-button no-print ml-2">+</button>
+                </div>
+                <div id="references-container">
+                    <div class="reference-entry relative">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="cv-subtitle">Nombre</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese el nombre" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Cargo o Relación</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese el cargo o relación" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Ciudad</label>
+                                <input type="text" class="cv-input" placeholder="Ingrese la ciudad" onfocus="this.placeholder=''">
+                            </div>
+                            <div>
+                                <label class="cv-subtitle">Teléfono</label>
+                                <input type="tel" class="cv-input" placeholder="Ingrese el teléfono" onfocus="this.placeholder=''">
+                            </div>
+                        </div>
+                        <button class="icon-button remove-reference no-print absolute top-0 right-0">×</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>
-        const TRANSLATIONS = {
-            en: {
-                "full-name": "Margarita Salazar Bastidas",
-                "tel-label": "Tel:",
-                "email-label": "Email:",
-                "city-label": "City:",
-                "marital-status-label": "Marital Status:",
-                "marital-status": "free Union",
-                "religion-label": "Religion:",
-                "religion": "I believe in God",
-                "objective-title": "Objective",
-                "objective-text": "To utilize my leadership capabilities, strong sense of responsibility and commitment, interpersonal skills, dedication to excellence, and strong teamwork ethic in a professional setting.",
-                "experience-title": "Work Experience",
-                "education-title": "Education",
-                "references-title": "References",
-                "abilities-title": "Abilities",
-                "interest-title": "Interest",
-                "interest-text": "Driven by results, passionate about excellence, and proven track record in leadership, collaborative teamwork, and customer-centric strategies."
-            },
-            es: {
-                "full-name": "Margarita Salazar Bastidas",
-                "tel-label": "Teléfono:",
-                "email-label": "Correo:",
-                "city-label": "Ciudad:",
-                "marital-status-label": "Estado Civil:",
-                "marital-status": "Unión Libre",
-                "religion-label": "Religión:",
-                "religion": "Creo en Dios",
-                "objective-title": "Objetivo",
-                "objective-text": "Utilizar mis capacidades de liderazgo, fuerte sentido de responsabilidad y compromiso, habilidades interpersonales, dedicación a la excelencia y ética de trabajo en equipo en un entorno profesional.",
-                "experience-title": "Experiencia Laboral",
-                "education-title": "Educación",
-                "references-title": "Referencias",
-                "abilities-title": "Habilidades",
-                "interest-title": "Intereses",
-                "interest-text": "Motivada por resultados, apasionada por la excelencia y con un historial comprobado en liderazgo, trabajo en equipo colaborativo y estrategias centradas en el cliente."
+        // Subir foto de perfil
+        document.getElementById('upload-pic-btn').addEventListener('click', function() {
+            document.getElementById('profile-pic-input').click();
+        });
+        document.getElementById('profile-pic-input').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-pic').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-        };
+        });
 
-        const SAMPLE_DATA = {
-            experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Surgery Scheduling Coordinator", functions: "Provided customer service, managed documentation, and coordinated surgical procedures." },
-            education: { course: "Occupational Health Course", period: "03/2023 - 03/2024", institution: "Sena Institute" },
-            reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Medical Director, Sigma Clinic", phone: "+57 3160000000" },
-            ability: { title: "Effective Leadership", description: "Ability to lead teams and coordinate activities effectively." }
-        };
+        // Eliminar profesión
+        document.getElementById('remove-profession').addEventListener('click', function() {
+            document.getElementById('profession-container').remove();
+        });
 
-        const SAMPLE_DATA_ES = {
-            experience: { company: "Valley Vision Clinic", period: "10/2019 - 10/2023", position: "Coordinadora de Programación de Cirugías", functions: "Brindé servicio al cliente, gestioné documentación y coordiné procedimientos quirúrgicos." },
-            education: { course: "Curso de Salud Ocupacional", period: "03/2023 - 03/2024", institution: "Instituto Sena" },
-            reference: { name: "OLGA LUCIA SANCLEMENTE", position: "Directora Médica, Clínica Sigma", phone: "+57 3160000000" },
-            ability: { title: "Liderazgo Efectivo", description: "Capacidad para liderar equipos y coordinar actividades de manera efectiva." }
-        };
-
-        const blockTemplates = {
-            experience: data => `<div class="cv-block">
-                <div class="flex justify-between mb-2">
-                    <div class="w-2/3 text-left">
-                        <span class="font-bold editable-field" data-default="${data.company}">${data.company}</span>
-                        <div class="editable-field" data-default="${data.position}">${data.position}</div>
-                    </div>
-                    <div class="w-1/3 text-right editable-field" data-default="${data.period}">${data.period}</div>
+        // Agregar educación
+        document.getElementById('add-education').addEventListener('click', function() {
+            const container = document.getElementById('education-container');
+            const entry = document.createElement('div');
+            entry.classList.add('education-entry', 'relative');
+            entry.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="cv-subtitle">Institución</label><input type="text" class="cv-input" placeholder="Ingrese la institución" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Título</label><input type="text" class="cv-input" placeholder="Ingrese el título" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Año de Graduación</label><input type="text" class="cv-input" placeholder="Ingrese el año" onfocus="this.placeholder=''"></div>
                 </div>
-                <div class="text-left">
-                    <div class="uppercase text-sm font-bold">FUNCTIONS:</div>
-                    <div class="editable-field" data-default="${data.functions}">${data.functions}</div>
-                </div>
-            </div>`,
-            education: data => `<div class="cv-block">
-                <div class="flex justify-between mb-2">
-                    <div class="w-2/3 text-left">
-                        <div class="font-bold editable-field" data-default="${data.course}">${data.course}</div>
-                        <div class="editable-field" data-default="${data.institution}">${data.institution}</div>
-                    </div>
-                    <div class="w-1/3 text-right editable-field" data-default="${data.period}">${data.period}</div>
-                </div>
-            </div>`,
-            reference: data => `<div class="cv-block">
-                <div class="font-bold text-left editable-field" data-default="${data.name}">${data.name}</div>
-                <div class="text-left editable-field" data-default="${data.position}">${data.position}</div>
-                <div class="text-left">
-                    <strong>Tel:</strong> <span class="editable-field" data-default="${data.phone}">${data.phone}</span>
-                </div>
-            </div>`,
-            ability: data => `<div class="cv-block">
-                <div class="ability-container">
-                    <div class="ability-content">
-                        <span class="font-bold editable-field" data-default="${data.title}">${data.title}: </span>
-                        <span class="editable-field" data-default="${data.description}">${data.description}</span>
-                    </div>
-                    <div class="ability-dots">${[1,2,3,4,5].map(i => `<div class="ability-dot" data-level="${i}"></div>`).join('')}</div>
-                </div>
-            </div>`
-        };
-
-        let currentLanguage = 'en';
-
-        function addBlock(section, data = {}) {
-            const container = document.getElementById(`${section}-container`);
-            container.insertAdjacentHTML('beforeend', blockTemplates[section](data));
-            if (section === 'ability') setupAbilityDots(container.lastElementChild);
-            setupEditableFields(container.lastElementChild);
-            updateRemoveButtons();
-        }
-
-        function setupAbilityDots(block) {
-            const dots = block.querySelectorAll('.ability-dot');
-            dots.forEach(dot => {
-                dot.addEventListener('click', () => {
-                    const level = parseInt(dot.dataset.level);
-                    dots.forEach((d, i) => {
-                        d.style.backgroundColor = (i + 1) <= level ? '#000' : '#ccc';
-                    });
-                });
-            });
-            dots.forEach(dot => dot.style.backgroundColor = '#000');
-        }
-
-        function updateRemoveButtons() {
-            document.querySelectorAll('.btn-remove').forEach(btn => {
-                const section = btn.dataset.section;
-                if (section) {
-                    const container = document.getElementById(`${section}-container`);
-                    btn.style.display = container.children.length > 1 ? 'flex' : 'none';
-                }
-            });
-        }
-
-        function addNewSection() {
-            const newSection = document.createElement('div');
-            newSection.className = 'mb-12 custom-section';
-            newSection.innerHTML = `
-                <div class="section-header">
-                    <h2 class="section-title editable-field" data-default="New Section">New Section</h2>
-                    <div class="buttons-container">
-                        <button class="btn btn-remove" data-section="custom">-</button>
-                    </div>
-                </div>
-                <hr class="my-6 border-black">
-                <div class="mt-6 editable-field" data-default="Write your content here...">Write your content here...</div>
+                <button class="icon-button remove-education no-print absolute top-0 right-0">×</button>
             `;
-            const interestSection = document.getElementById('interest-section');
-            interestSection.before(newSection);
-            setupEditableFields(newSection);
-            newSection.querySelector('.btn-remove').addEventListener('click', () => newSection.remove());
-            newSection.querySelector('.btn-remove').style.display = 'flex';
-        }
+            container.appendChild(entry);
+        });
 
-        function setupProfileImage() {
-            const profileCircle = document.getElementById('profile-circle');
-            const profileInput = document.getElementById('profile-input');
-            const profileImage = document.getElementById('profile-image');
-            profileCircle.addEventListener('click', () => profileInput.click());
-            profileInput.addEventListener('change', () => {
-                const file = profileInput.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = () => profileImage.src = reader.result;
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
+        // Eliminar educación
+        document.getElementById('education-container').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-education')) e.target.parentElement.remove();
+        });
 
-        function toggleLanguage() {
-            currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
-            const button = document.getElementById('toggle-language');
-            button.textContent = currentLanguage === 'en' ? 'EN/ES' : 'ES/EN';
-            button.style.backgroundImage = currentLanguage === 'en' ? `url('/images/EN.svg')` : `url('/images/CO.svg')`;
-            
-            const elements = document.querySelectorAll('[data-translate]');
-            elements.forEach(el => {
-                const key = el.dataset.translate;
-                if (TRANSLATIONS[currentLanguage][key]) {
-                    if (el.classList.contains('editable-field')) {
-                        el.dataset.default = TRANSLATIONS[currentLanguage][key];
-                        if (el.getAttribute('data-empty') === "true") {
-                            el.textContent = TRANSLATIONS[currentLanguage][key];
-                        }
-                    } else {
-                        el.textContent = TRANSLATIONS[currentLanguage][key];
+        // Agregar experiencia
+        document.getElementById('add-experience').addEventListener('click', function() {
+            const container = document.getElementById('experience-container');
+            const entry = document.createElement('div');
+            entry.classList.add('experience-entry', 'relative');
+            entry.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="cv-subtitle">Empresa</label><input type="text" class="cv-input" placeholder="Ingrese la empresa" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Puesto</label><input type="text" class="cv-input" placeholder="Ingrese el puesto" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Fecha de Inicio</label><input type="text" class="cv-input" placeholder="Ingrese la fecha de inicio" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Fecha de Fin</label><input type="text" class="cv-input" placeholder="Ingrese la fecha de fin" onfocus="this.placeholder=''"></div>
+                    <div class="col-span-2"><label class="cv-subtitle">Descripción</label><textarea class="cv-input" placeholder="Ingrese la descripción" onfocus="this.placeholder=''"></textarea></div>
+                </div>
+                <button class="icon-button remove-experience no-print absolute top-0 right-0">×</button>
+            `;
+            container.appendChild(entry);
+        });
+
+        // Eliminar experiencia
+        document.getElementById('experience-container').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-experience')) e.target.parentElement.remove();
+        });
+
+        // Agregar habilidad
+        document.getElementById('add-skill').addEventListener('click', function() {
+            const container = document.getElementById('skills-container');
+            const entry = document.createElement('div');
+            entry.classList.add('skill-entry', 'relative', 'flex', 'items-center');
+            entry.innerHTML = `
+                <input type="text" class="cv-input" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
+                <div class="skill-level no-print">
+                    <span class="skill-level-circle" data-level="1"></span>
+                    <span class="skill-level-circle" data-level="2"></span>
+                    <span class="skill-level-circle" data-level="3"></span>
+                    <span class="skill-level-circle" data-level="4"></span>
+                    <span class="skill-level-circle" data-level="5"></span>
+                </div>
+                <input type="hidden" class="skill-level-input" value="0">
+                <button class="icon-button remove-skill no-print absolute top-0 right-0">×</button>
+            `;
+            container.appendChild(entry);
+            attachSkillLevelListeners(entry);
+        });
+
+        // Selección de nivel de habilidad
+        function attachSkillLevelListeners(entry) {
+            const circles = entry.querySelectorAll('.skill-level-circle');
+            const levelInput = entry.querySelector('.skill-level-input');
+            circles.forEach(circle => {
+                circle.addEventListener('click', function() {
+                    const level = parseInt(this.getAttribute('data-level'));
+                    circles.forEach(c => c.classList.remove('filled'));
+                    for (let i = 0; i < level; i++) {
+                        circles[i].classList.add('filled');
                     }
-                }
-            });
-            
-            // Clear and repopulate dynamic sections
-            document.getElementById('experience-container').innerHTML = '';
-            document.getElementById('education-container').innerHTML = '';
-            document.getElementById('reference-container').innerHTML = '';
-            document.getElementById('ability-container').innerHTML = '';
-            
-            const data = currentLanguage === 'en' ? SAMPLE_DATA : SAMPLE_DATA_ES;
-            Object.keys(data).forEach(section => addBlock(section, data[section]));
-        }
-
-        function setupEditableFields(container = document) {
-            const fields = container.querySelectorAll('.editable-field');
-            
-            fields.forEach(field => {
-                // Set contenteditable attribute
-                field.setAttribute('contenteditable', 'true');
-                
-                // Store default value if not already set
-                if (!field.dataset.default && field.textContent.trim()) {
-                    field.dataset.default = field.textContent.trim();
-                }
-                
-                // Check if field is empty and set data-empty attribute
-                if (!field.textContent.trim() || field.textContent === field.dataset.default) {
-                    field.setAttribute('data-empty', 'true');
-                } else {
-                    field.setAttribute('data-empty', 'false');
-                }
-                
-                // Focus event: Clear default content
-                field.addEventListener('focus', function() {
-                    if (this.getAttribute('data-empty') === 'true') {
-                        this.textContent = '';
-                        this.setAttribute('data-empty', 'false');
-                    }
-                });
-                
-                // Blur event: Restore default if empty
-                field.addEventListener('blur', function() {
-                    if (!this.textContent.trim()) {
-                        this.textContent = this.dataset.default;
-                        this.setAttribute('data-empty', 'true');
-                    } else {
-                        this.setAttribute('data-empty', 'false');
-                    }
-                });
-                
-                // Input event: Update data-empty attribute
-                field.addEventListener('input', function() {
-                    this.setAttribute('data-empty', !this.textContent.trim() ? 'true' : 'false');
+                    levelInput.value = level;
                 });
             });
         }
 
-        function initialize() {
-            Object.keys(SAMPLE_DATA).forEach(section => addBlock(section, SAMPLE_DATA[section]));
-            
-            document.querySelectorAll('.btn-add').forEach(btn => {
-                btn.addEventListener('click', () => addBlock(btn.dataset.section, {}));
-            });
-            
-            document.querySelectorAll('.btn-remove').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const container = document.getElementById(`${btn.dataset.section}-container`);
-                    if (container.children.length > 1) container.lastElementChild.remove();
-                    updateRemoveButtons();
-                });
-            });
-            
-            document.getElementById('add-section').addEventListener('click', addNewSection);
-            document.getElementById('print-cv').addEventListener('click', () => window.print());
-            document.getElementById('toggle-language').addEventListener('click', toggleLanguage);
-            
-            setupProfileImage();
-            setupEditableFields();
-        }
+        // Inicializar listeners para habilidades existentes
+        document.querySelectorAll('.skill-entry').forEach(attachSkillLevelListeners);
 
-        document.addEventListener('DOMContentLoaded', initialize);
+        // Eliminar habilidad
+        document.getElementById('skills-container').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-skill')) e.target.parentElement.remove();
+        });
+
+        // Agregar referencia
+        document.getElementById('add-reference').addEventListener('click', function() {
+            const container = document.getElementById('references-container');
+            const entry = document.createElement('div');
+            entry.classList.add('reference-entry', 'relative');
+            entry.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="cv-subtitle">Nombre</label><input type="text" class="cv-input" placeholder="Ingrese el nombre" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Cargo o Relación</label><input type="text" class="cv-input" placeholder="Ingrese el cargo o relación" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Ciudad</label><input type="text" class="cv-input" placeholder="Ingrese la ciudad" onfocus="this.placeholder=''"></div>
+                    <div><label class="cv-subtitle">Teléfono</label><input type="tel" class="cv-input" placeholder="Ingrese el teléfono" onfocus="this.placeholder=''"></div>
+                </div>
+                <button class="icon-button remove-reference no-print absolute top-0 right-0">×</button>
+            `;
+            container.appendChild(entry);
+        });
+
+        // Eliminar referencia
+        document.getElementById('references-container').addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-reference')) e.target.parentElement.remove();
+        });
+
+        // Agregar sección personalizada
+        document.getElementById('add-custom-section').addEventListener('click', function() {
+            const cvContent = document.getElementById('cv-content');
+            const section = document.createElement('div');
+            section.classList.add('cv-section', 'relative');
+            section.innerHTML = `
+                <div class="section-header">
+                    <h2 class="cv-title inline-block"><input type="text" class="cv-input" placeholder="Título de la sección" onfocus="this.placeholder=''"></h2>
+                    <button class="add-button no-print ml-2">+</button>
+                    <button class="icon-button remove-custom-section no-print ml-2">×</button>
+                </div>
+                <div class="custom-entries">
+                    <div class="custom-entry relative">
+                        <textarea class="cv-input" placeholder="Contenido de la sección" onfocus="this.placeholder=''"></textarea>
+                        <button class="icon-button remove-custom-entry no-print absolute top-0 right-0">×</button>
+                    </div>
+                </div>
+            `;
+            cvContent.appendChild(section);
+        });
+
+        // Agregar/eliminar entradas personalizadas
+        document.getElementById('cv-content').addEventListener('click', function(e) {
+            if (e.target.classList.contains('add-button') && e.target.parentElement.classList.contains('section-header')) {
+                const section = e.target.closest('.cv-section');
+                const entriesContainer = section.querySelector('.custom-entries');
+                const entry = document.createElement('div');
+                entry.classList.add('custom-entry', 'relative');
+                entry.innerHTML = `
+                    <textarea class="cv-input" placeholder="Contenido de la sección" onfocus="this.placeholder=''"></textarea>
+                    <button class="icon-button remove-custom-entry no-print absolute top-0 right-0">×</button>
+                `;
+                entriesContainer.appendChild(entry);
+            }
+            if (e.target.classList.contains('remove-custom-entry')) e.target.parentElement.remove();
+            if (e.target.classList.contains('remove-custom-section')) e.target.parentElement.remove();
+        });
+
+        // Imprimir
+        document.getElementById('print-btn').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Guardar progreso
+        document.getElementById('save-btn').addEventListener('click', function() {
+            const cvContent = document.getElementById('cv-content').innerHTML;
+            localStorage.setItem('cvProgress', cvContent);
+            alert('Progreso guardado');
+        });
+
+        // Restaurar progreso
+        document.getElementById('restore-btn').addEventListener('click', function() {
+            const savedContent = localStorage.getItem('cvProgress');
+            if (savedContent) {
+                document.getElementById('cv-content').innerHTML = savedContent;
+                document.querySelectorAll('.skill-entry').forEach(attachSkillLevelListeners);
+                alert('Progreso restaurado');
+            } else {
+                alert('No hay progreso guardado');
+            }
+        });
     </script>
 </body>
 </html>
