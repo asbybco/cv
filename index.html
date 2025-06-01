@@ -393,6 +393,35 @@
                 box-shadow: none !important; 
                 border-radius: 0 !important; 
                 background: white !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            .education-entry, .experience-entry, .reference-entry, .custom-entry {
+                position: relative;
+                margin-left: 1rem;
+                padding-left: 0.75rem;
+                margin-bottom: 0.75rem;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .education-entry::before, .experience-entry::before, .reference-entry::before, .custom-entry::before {
+                content: '';
+                position: absolute;
+                left: -0.375rem;
+                top: 0.5rem;
+                width: 0.375rem;
+                height: 0.375rem;
+                background-color: #1f2937;
+                border-radius: 50%;
+            }
+            .education-entry:not(:last-child)::after, .experience-entry:not(:last-child)::after, .reference-entry:not(:last-child)::after, .custom-entry:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                left: -0.1875rem;
+                top: 0.875rem;
+                bottom: -0.75rem;
+                width: 1px;
+                background-color: #1f2937;
             }
         }
     </style>
