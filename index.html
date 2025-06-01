@@ -48,116 +48,404 @@
     <style>
         body { font-family: 'Roboto', sans-serif; }
         .cv-section { margin-bottom: 1.5rem; }
-        .cv-title { font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: #1f2937; }
-        .cv-subtitle { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
-        .cv-text { font-size: 1rem; margin-bottom: 0.5rem; color: #4b5563; }
-        .cv-input { width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; transition: border-color 0.2s; }
-        .cv-input:focus { border-color: #3b82f6; outline: none; }
-        .cv-button { padding: 0.5rem 1rem; background-color: #3b82f6; color: white; border: none; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .cv-button:hover { background-color: #2563eb; transform: translateY(-1px); }
-        .icon-button { padding: 0.25rem; background-color: transparent; color: #ef4444; border: none; cursor: pointer; font-size: 1.25rem; }
-        .icon-button:hover { color: #b91c1c; }
-        .add-button { padding: 0.25rem 0.5rem; background-color: #bfdbfe; color: #1d4ed8; border: none; border-radius: 50%; cursor: pointer; font-size: 1rem; line-height: 1; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s; }
-        .add-button:hover { background-color: #93c5fd; transform: scale(1.1); }
-        .profile-pic { width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin-bottom: 1rem; }
-        .skill-level { display: inline-flex; gap: 0.25rem; margin-left: 0.5rem; }
-        .skill-level-circle { width: 10px; height: 10px; border-radius: 50%; background-color: #d1d5db; }
-        .skill-level-circle.filled { background-color: #3b82f6; }
-        .control-panel { background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .no-print { display: block; }
-        .section-header { display: flex; align-items: center; }
-
-        /* Estilos para viñeta y conector vertical (excluyendo Habilidades) */
+        .cv-title { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            margin-bottom: 0.75rem; 
+            color: #1f2937; 
+        }
+        .cv-subtitle { 
+            font-size: 1.125rem; 
+            font-weight: 600; 
+            margin-bottom: 0.5rem; 
+            color: #374151; 
+        }
+        .cv-text { 
+            font-size: 0.875rem; 
+            margin-bottom: 0.5rem; 
+            color: #4b5563; 
+        }
+        .cv-input { 
+            width: 100%; 
+            padding: 0.5rem; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem; 
+            transition: border-color 0.2s; 
+            font-size: 0.875rem;
+        }
+        .cv-input:focus { 
+            border-color: #3b82f6; 
+            outline: none; 
+        }
+        .name-input {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s;
+        }
+        .name-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .profession-input {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s;
+        }
+        .profession-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+        .cv-button { 
+            padding: 0.5rem 1rem; 
+            background-color: #3b82f6; 
+            color: white; 
+            border: none; 
+            border-radius: 0.375rem; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            font-size: 0.875rem;
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .cv-button:hover { 
+            background-color: #2563eb; 
+            transform: translateY(-1px); 
+        }
+        .icon-button { 
+            padding: 0.25rem; 
+            background-color: transparent; 
+            color: #ef4444; 
+            border: none; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            min-height: 44px;
+            min-width: 44px;
+        }
+        .icon-button:hover { 
+            color: #b91c1c; 
+        }
+        .add-button { 
+            padding: 0.25rem 0.5rem; 
+            background-color: #bfdbfe; 
+            color: #1d4ed8; 
+            border: none; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 0.875rem; 
+            line-height: 1; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+            transition: all 0.2s; 
+            min-height: 32px;
+            min-width: 32px;
+        }
+        .add-button:hover { 
+            background-color: #93c5fd; 
+            transform: scale(1.1); 
+        }
+        .profile-pic { 
+            width: 100px; 
+            height: 100px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            margin-bottom: 1rem; 
+        }
+        .skill-level { 
+            display: inline-flex; 
+            gap: 0.25rem; 
+            margin-left: 0.5rem; 
+        }
+        .skill-level-circle { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background-color: #d1d5db; 
+        }
+        .skill-level-circle.filled { 
+            background-color: #3b82f6; 
+        }
+        .control-panel { 
+            background: linear-gradient(135deg, #3b82f6, #2563eb); 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .control-panel h1 {
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .control-panel .flex {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .no-print { 
+            display: block; 
+        }
+        .section-header { 
+            display: flex; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 0.5rem;
+        }
+        .custom-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            transition: border-color 0.2s;
+        }
+        .custom-section-title:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
         .education-entry, .experience-entry, .reference-entry, .custom-entry {
             position: relative;
-            margin-left: 1.5rem;
-            padding-left: 1rem;
-            margin-bottom: 1rem;
+            margin-left: 1rem;
+            padding-left: 0.75rem;
+            margin-bottom: 0.75rem;
         }
         .education-entry::before, .experience-entry::before, .reference-entry::before, .custom-entry::before {
             content: '';
             position: absolute;
-            left: -0.5rem;
+            left: -0.375rem;
             top: 0.5rem;
-            width: 0.5rem;
-            height: 0.5rem;
+            width: 0.375rem;
+            height: 0.375rem;
             background-color: #1f2937;
             border-radius: 50%;
         }
         .education-entry:not(:last-child)::after, .experience-entry:not(:last-child)::after, .reference-entry:not(:last-child)::after, .custom-entry:not(:last-child)::after {
             content: '';
             position: absolute;
-            left: -0.25rem;
-            top: 1rem;
-            bottom: -1rem;
+            left: -0.1875rem;
+            top: 0.875rem;
+            bottom: -0.75rem;
             width: 1px;
             background-color: #1f2937;
         }
-
-@media print {
-    body { background-color: white; margin: 0; padding: 0; }
-    .no-print { display: none !important; }
-    .cv-input { border: none; }
-    .cv-section { margin-bottom: 0.75rem !important; }
-    .profile-pic { border: 1px solid #e5e7eb; }
-    .container { 
-        padding: 0 !important; 
-        max-width: 100% !important;
-        margin: 0 !important;
-    }
-    #cv-content { 
-        margin: 0 !important;
-        padding: 1rem !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        background: white !important;
-    }
-}
+        @media (min-width: 640px) {
+            .cv-title { font-size: 1.75rem; }
+            .custom-section-title { font-size: 1.75rem; padding: 0.75rem; }
+            .cv-subtitle { font-size: 1.25rem; }
+            .cv-text { font-size: 1rem; }
+            .cv-input { 
+                padding: 0.75rem; 
+                font-size: 1rem; 
+            }
+            .name-input { font-size: 1.75rem; padding: 0.75rem; }
+            .profession-input { font-size: 1.25rem; padding: 0.75rem; }
+            .cv-button { 
+                font-size: 1rem; 
+            }
+            .icon-button { 
+                font-size: 1.25rem; 
+            }
+            .add-button { 
+                font-size: 1rem; 
+                min-height: 36px; 
+                min-width: 36px; 
+            }
+            .profile-pic { 
+                width: 150px; 
+                height: 150px; 
+            }
+            .skill-level-circle { 
+                width: 10px; 
+                height: 10px; 
+            }
+            .education-entry, .experience-entry, .reference-entry, .custom-entry {
+                margin-left: 1.5rem;
+                padding-left: 1rem;
+                margin-bottom: 1rem;
+            }
+            .education-entry::before, .experience-entry::before, .reference-entry::before, .custom-entry::before {
+                left: -0.5rem;
+                width: 0.5rem;
+                height: 0.5rem;
+            }
+            .education-entry:not(:last-child)::after, .experience-entry:not(:last-child)::after, .reference-entry:not(:last-child)::after, .custom-entry:not(:last-child)::after {
+                left: -0.25rem;
+                top: 1rem;
+                bottom: -1rem;
+            }
+        }
+        @media (max-width: 639px) {
+            .container { 
+                padding-left: 0.5rem; 
+                padding-right: 0.5rem; 
+            }
+            #cv-content { 
+                padding: 1rem; 
+            }
+            .control-panel h1 { 
+                font-size: 1.125rem; 
+            }
+            .cv-button { 
+                padding: 0.375rem 0.75rem; 
+                font-size: 0.75rem; 
+            }
+            .flex.items-center.mb-6 { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 1rem; 
+            }
+            .ml-6 { 
+                margin-left: 0; 
+            }
+            .grid.grid-cols-2 { 
+                grid-template-columns: 1fr; 
+            }
+            .col-span-2 { 
+                grid-column: 1; 
+            }
+            .skill-entry { 
+                width: 100%; 
+            }
+            .cv-section { 
+                margin-bottom: 1rem; 
+            }
+            .ml-0.sm\:ml-6.flex-1 {
+                width: 100%;
+            }
+            #name-input, #profession-input {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                padding-right: 2rem;
+            }
+            #profession-container .icon-button {
+                right: 0.5rem;
+            }
+            .control-panel-wrapper {
+                max-height: 500px;
+                overflow: hidden;
+                transition: max-height 0.3s ease-in-out;
+            }
+            .control-panel-wrapper.collapsed {
+                max-height: 0;
+            }
+            #toggle-panel-btn {
+                width: 100%;
+                justify-content: center;
+                background-color: #4b5563;
+                color: white;
+            }
+            #toggle-panel-btn:hover {
+                background-color: #374151;
+            }
+        }
+        @media (max-width: 360px) {
+            .control-panel .flex { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                width: 100%; 
+            }
+            .control-panel .cv-button { 
+                width: 100%; 
+                text-align: center; 
+            }
+        }
+        @media print {
+            body { 
+                background-color: white; 
+                margin: 0; 
+                padding: 0; 
+            }
+            .no-print { 
+                display: none !important; 
+            }
+            .cv-input, .custom-section-title, .name-input, .profession-input { 
+                border: none; 
+            }
+            .cv-section { 
+                margin-bottom: 0.75rem !important; 
+            }
+            .profile-pic { 
+                border: 1px solid #e5e7eb; 
+            }
+            .container { 
+                padding: 0 !important; 
+                max-width: 100% !important; 
+                margin: 0 !important; 
+            }
+            #cv-content { 
+                margin: 0 !important; 
+                padding: 1rem !important; 
+                box-shadow: none !important; 
+                border-radius: 0 !important; 
+                background: white !important; 
+            }
+        }
     </style>
 </head>
 <body class="bg-white">
-    <div class="container mx-auto p-4">
-        <div class="control-panel flex justify-between items-center mb-4 no-print">
-            <h1 class="text-2xl font-bold text-white">CV Creator Profesional</h1>
-            <div class="flex space-x-2">
-                <button id="print-btn" class="cv-button flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Imprimir
-                </button>
-                <button id="save-btn" class="cv-button flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                    Guardar
-                </button>
-                <button id="restore-btn" class="cv-button flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Restaurar
-                </button>
-                <button id="add-custom-section" class="cv-button flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Nueva Sección
-                </button>
+    <div class="container mx-auto p-4 sm:px-6">
+        <button id="toggle-panel-btn" class="cv-button flex items-center mb-2 sm:hidden no-print">
+            <svg id="toggle-icon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            <span>Mostrar Controles</span>
+        </button>
+        <div id="control-panel-wrapper" class="control-panel-wrapper collapsed">
+            <div class="control-panel flex justify-between items-center mb-4 no-print">
+                <h1 class="text-xl sm:text-2xl font-bold text-white">CV Creator Profesional</h1>
+                <div class="flex space-x-2">
+                    <button id="print-btn" class="cv-button flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Imprimir
+                    </button>
+                    <button id="save-btn" class="cv-button flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Guardar
+                    </button>
+                    <button id="restore-btn" class="cv-button flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Restaurar
+                    </button>
+                    <button id="add-custom-section" class="cv-button flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nueva Sección
+                    </button>
+                </div>
             </div>
         </div>
-        <div id="cv-content" class="bg-white p-6 rounded-lg shadow-lg">
+        <div id="cv-content" class="bg-white p-4 sm:p-6 rounded-lg shadow-lg">
             <div class="flex items-center mb-6">
                 <div>
                     <input type="file" id="profile-pic-input" class="no-print" accept="image/*" style="display: none;">
-                    <img id="profile-pic" class="profile-pic" src="https://via.placeholder.com/150" alt="Foto de perfil">
-                    <button id="upload-pic-btn" class="cv-button no-print">Subir Foto</button>
+                    <img id="profile-pic" class="profile-pic" src="images/default-profile.jpg" alt="Foto de perfil">
+                    <button id="upload-pic-btn" class="cv-button no-print mt-2">Subir Foto</button>
                 </div>
-                <div class="ml-6 flex-1">
+                <div class="ml-0 sm:ml-6 flex-1">
                     <div class="relative">
-                        <input type="text" id="name-input" class="cv-title cv-input" placeholder="Nombre Completo" onfocus="this.placeholder=''">
+                        <input type="text" id="name-input" class="name-input" placeholder="Nombre Completo" onfocus="this.placeholder=''">
                     </div>
                     <div class="relative" id="profession-container">
-                        <input type="text" id="profession-input" class="cv-subtitle cv-input" placeholder="Profesión o Título" onfocus="this.placeholder=''">
+                        <input type="text" id="profession-input" class="profession-input" placeholder="Profesión o Título" onfocus="this.placeholder=''">
                         <button id="remove-profession" class="icon-button no-print absolute top-0 right-0">×</button>
                     </div>
                 </div>
             </div>
             <div class="cv-section">
                 <h2 class="cv-title">Información Personal</h2>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         <div class="flex-1">
@@ -203,7 +491,7 @@
                 </div>
                 <div id="education-container">
                     <div class="education-entry relative">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="cv-subtitle">Institución</label>
                                 <input type="text" class="cv-input" placeholder="Ingrese la institución" onfocus="this.placeholder=''">
@@ -228,7 +516,7 @@
                 </div>
                 <div id="experience-container">
                     <div class="experience-entry relative">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="cv-subtitle">Empresa</label>
                                 <input type="text" class="cv-input" placeholder="Ingrese la empresa" onfocus="this.placeholder=''">
@@ -245,7 +533,7 @@
                                 <label class="cv-subtitle">Fecha de Fin</label>
                                 <input type="text" class="cv-input" placeholder="Ingrese la fecha de fin" onfocus="this.placeholder=''">
                             </div>
-                            <div class="col-span-2">
+                            <div class="col-span-1 sm:col-span-2">
                                 <label class="cv-subtitle">Descripción</label>
                                 <textarea class="cv-input" placeholder="Ingrese la descripción" onfocus="this.placeholder=''"></textarea>
                             </div>
@@ -260,8 +548,8 @@
                     <button id="add-skill" class="add-button no-print ml-2">+</button>
                 </div>
                 <div id="skills-container" class="flex flex-wrap gap-2">
-                    <div class="skill-entry relative flex items-center">
-                        <input type="text" class="cv-input" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
+                    <div class="skill-entry relative flex items-center w-full sm:w-auto">
+                        <input type="text" class="cv-input flex-1" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
                         <div class="skill-level no-print">
                             <span class="skill-level-circle" data-level="1"></span>
                             <span class="skill-level-circle" data-level="2"></span>
@@ -281,7 +569,7 @@
                 </div>
                 <div id="references-container">
                     <div class="reference-entry relative">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="cv-subtitle">Nombre</label>
                                 <input type="text" class="cv-input" placeholder="Ingrese el nombre" onfocus="this.placeholder=''">
@@ -332,7 +620,7 @@
             const entry = document.createElement('div');
             entry.classList.add('education-entry', 'relative');
             entry.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div><label class="cv-subtitle">Institución</label><input type="text" class="cv-input" placeholder="Ingrese la institución" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Título</label><input type="text" class="cv-input" placeholder="Ingrese el título" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Año de Graduación</label><input type="text" class="cv-input" placeholder="Ingrese el año" onfocus="this.placeholder=''"></div>
@@ -353,12 +641,12 @@
             const entry = document.createElement('div');
             entry.classList.add('experience-entry', 'relative');
             entry.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div><label class="cv-subtitle">Empresa</label><input type="text" class="cv-input" placeholder="Ingrese la empresa" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Puesto</label><input type="text" class="cv-input" placeholder="Ingrese el puesto" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Fecha de Inicio</label><input type="text" class="cv-input" placeholder="Ingrese la fecha de inicio" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Fecha de Fin</label><input type="text" class="cv-input" placeholder="Ingrese la fecha de fin" onfocus="this.placeholder=''"></div>
-                    <div class="col-span-2"><label class="cv-subtitle">Descripción</label><textarea class="cv-input" placeholder="Ingrese la descripción" onfocus="this.placeholder=''"></textarea></div>
+                    <div class="col-span-1 sm:col-span-2"><label class="cv-subtitle">Descripción</label><textarea class="cv-input" placeholder="Ingrese la descripción" onfocus="this.placeholder=''"></textarea></div>
                 </div>
                 <button class="icon-button remove-experience no-print absolute top-0 right-0">×</button>
             `;
@@ -374,9 +662,9 @@
         document.getElementById('add-skill').addEventListener('click', function() {
             const container = document.getElementById('skills-container');
             const entry = document.createElement('div');
-            entry.classList.add('skill-entry', 'relative', 'flex', 'items-center');
+            entry.classList.add('skill-entry', 'relative', 'flex', 'items-center', 'w-full', 'sm:w-auto');
             entry.innerHTML = `
-                <input type="text" class="cv-input" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
+                <input type="text" class="cv-input flex-1" placeholder="Ingrese una habilidad" onfocus="this.placeholder=''">
                 <div class="skill-level no-print">
                     <span class="skill-level-circle" data-level="1"></span>
                     <span class="skill-level-circle" data-level="2"></span>
@@ -405,7 +693,7 @@
                     levelInput.value = level;
                 });
             });
-        }
+        };
 
         // Inicializar listeners para habilidades existentes
         document.querySelectorAll('.skill-entry').forEach(attachSkillLevelListeners);
@@ -421,7 +709,7 @@
             const entry = document.createElement('div');
             entry.classList.add('reference-entry', 'relative');
             entry.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div><label class="cv-subtitle">Nombre</label><input type="text" class="cv-input" placeholder="Ingrese el nombre" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Cargo o Relación</label><input type="text" class="cv-input" placeholder="Ingrese el cargo o relación" onfocus="this.placeholder=''"></div>
                     <div><label class="cv-subtitle">Ciudad</label><input type="text" class="cv-input" placeholder="Ingrese la ciudad" onfocus="this.placeholder=''"></div>
@@ -444,7 +732,7 @@
             section.classList.add('cv-section', 'relative');
             section.innerHTML = `
                 <div class="section-header">
-                    <h2 class="cv-title inline-block"><input type="text" class="cv-input" placeholder="Título de la sección" onfocus="this.placeholder=''"></h2>
+                    <h2 class="cv-title inline-block"><input type="text" class="custom-section-title" placeholder="Título de la sección" onfocus="this.placeholder=''"></h2>
                     <button class="add-button no-print ml-2">+</button>
                     <button class="icon-button remove-custom-section no-print ml-2">×</button>
                 </div>
@@ -484,7 +772,7 @@
         document.getElementById('save-btn').addEventListener('click', function() {
             const cvContent = document.getElementById('cv-content').innerHTML;
             localStorage.setItem('cvProgress', cvContent);
-            alert('Progreso guardado');
+            alert('Progresado guardado');
         });
 
         // Restaurar progreso
@@ -498,6 +786,30 @@
                 alert('No hay progreso guardado');
             }
         });
+
+        // Toggle panel de control en móviles
+        document.getElementById('toggle-panel-btn').addEventListener('click', function() {
+            const wrapper = document.getElementById('control-panel-wrapper');
+            const icon = document.getElementById('toggle-icon');
+            wrapper.classList.toggle('collapsed');
+            if (wrapper.classList.contains('collapsed')) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>';
+                this.querySelector('span:last-child').textContent = 'Mostrar Controles';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+                this.querySelector('span:last-child').textContent = 'Ocultar Controles';
+            }
+        });
+
+        // Inicializar estado del botón toggle en móviles
+        if (window.innerWidth <= 640) {
+            const wrapper = document.getElementById('control-panel-wrapper');
+            const icon = document.getElementById('toggle-icon');
+            const button = document.getElementById('toggle-panel-btn');
+            wrapper.classList.add('collapsed');
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>';
+            button.querySelector('span').textContent = 'Mostrar Controles';
+        };
     </script>
 </body>
 </html>
